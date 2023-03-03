@@ -1,0 +1,31 @@
+import pandas as pd
+import gzip
+
+# Function to apply to an individual column
+def AF_extract(info_column):
+    # Replace this with your own function
+    annotations = info_column.split(';')
+
+    for annotation in annotations:
+        key_value_pair = annotation.split('=')
+        if key_value_pair[0] == 'AF':
+            af_value = key_value_pair[1]
+            return af_value
+
+
+
+# Open gzip file and read in chunks
+chunk_size = 1000000
+gnomadfile = 'nocomments.txt.gz'
+
+output_file_path = 'output_file.csv'
+
+
+with gzip.open(gnomadfile, 'rt') as input_file, open(output_file_path, 'a') as output_file:
+    for chunk in pd.read_csv(input_file, sep='\t', chunksize=chunk_size):
+        # Apply function to an individual column
+        chunk['INFO'] = chunk['INFO'].apply(AF_extract)
+        chunk.to_csv(output_file,
+        header=['CHROM', 'POS', 'ID','REF','ALT','QUAL', 'FILTER','AF'],
+        index=False)
+        # Do other processing or write to a database
