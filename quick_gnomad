@@ -19,13 +19,12 @@ chunk_size = 1000000
 gnomadfile = 'nocomments.txt.gz'
 
 output_file_path = 'output_file.csv'
-
+col_index = 7
 
 with gzip.open(gnomadfile, 'rt') as input_file, open(output_file_path, 'a') as output_file:
     for chunk in pd.read_csv(input_file, sep='\t', chunksize=chunk_size):
         # Apply function to an individual column
-        chunk['INFO'] = chunk['INFO'].apply(AF_extract)
-        chunk.to_csv(output_file,
-        header=['CHROM', 'POS', 'ID','REF','ALT','QUAL', 'FILTER','AF'],
-        index=False)
+        #chunk['INFO'] = chunk['INFO'].apply(AF_extract)
+        chunk.iloc[:, col_index] = chunk.iloc[:, col_index].apply(AF_extract)
+        chunk.to_csv(output_file, header=['CHROM', 'POS', 'ID','REF','ALT','QUAL', 'FILTER','AF'], index=False)
         # Do other processing or write to a database
