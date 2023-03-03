@@ -43,13 +43,12 @@ def parse_row(line):
 
 with open(gnomadfile,'r') as gnomread:
     for line in gnomread:
-        line = gnomread.readline()
-        line = line.split('\t')
-        line = parse_row(line)
-        line = [line]
-        #print(line)
-        df = pd.DataFrame(line, columns=['CHROM', 'POS', 'ID','REF','ALT','QUAL', 'FILTER','AF'])
-        #print(df)
-        sql_append_tsv_chunk(df)
+        if not line.strip().startswith("#"):
+            line = gnomread.readline()
+            line = line.split('\t')
+            line = parse_row(line)
+            line = [line]
+            df = pd.DataFrame(line, columns=['CHROM', 'POS', 'ID','REF','ALT','QUAL', 'FILTER','AF'])
+            sql_append_tsv_chunk(df)
 
 c.close()
