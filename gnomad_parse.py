@@ -1,10 +1,11 @@
 # convert tsv to SQL db via python
 
-import sqlite3, csv
+import sqlite3, csv, gzip
 from pathlib import Path
 import pandas as pd
 # create empty file
 
+'''
 Path('/home/ionadmin/ngs_variant_annotation/variantAnnotation/gnomad_17.sdb').touch()
 # SQL conn
 with sqlite3.connect('/home/ionadmin/ngs_variant_annotation/variantAnnotation/gnomad_17.sdb', timeout = 100) as conn:
@@ -13,13 +14,11 @@ with sqlite3.connect('/home/ionadmin/ngs_variant_annotation/variantAnnotation/gn
 Path('gnomad_17.sdb').touch()
 with sqlite3.connect('gnomad_17.sdb', timeout = 100) as conn:
     c = conn.cursor()
-'''
 
-gnomadfile = 'gnomad.exomes.r2.1.1.sites.17.vcf'
 
-''' Specifying columns is not necessary for tables with column
-names
-'''
+#gnomadfile = 'gnomad.exomes.r2.1.1.sites.17.vcf'
+gnomadfile = 'nocomments.txt.gz'
+
 
 def sql_append_tsv_chunk(chunk):
     # write the data to a sqlite table
@@ -45,10 +44,11 @@ def parse_row(line):
     # Convert the row back to a tuple and return it
     return(line)
 
-with open(gnomadfile,'r') as gnomread:
+with gzip.open(gnomadfile,'rb') as gnomread:
     for line in gnomread:
-        if not line.strip().startswith("#"):
+        if not line.strip().startswith(b"#"):
             line = gnomread.readline()
+            line = line.decode()
             line = line.split('\t')
             if len(line) == 8:
                 line = parse_row(line)
