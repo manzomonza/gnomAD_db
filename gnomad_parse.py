@@ -33,8 +33,7 @@ def AF_extract(info_column):
         key_value_pair = annotation.split('=')
         if key_value_pair[0] == 'AF':
             af_value = key_value_pair[1]
-            break
-    return af_value
+            return af_value
 
 def parse_row(line):
     column_index = 7
