@@ -1,0 +1,55 @@
+# convert tsv to SQL db via python
+
+import sqlite3, csv
+from pathlib import Path
+import pandas as pd
+# create empty file
+Path('gnomad_17.sdb').touch()
+
+## SQL conn
+with sqlite3.connect('gnomad_17.sdb', timeout = 100) as conn:
+    c = conn.cursor()
+
+gnomadfile = 'nocomments.txt'
+
+''' Specifying columns is not necessary for tables with column
+names
+'''
+
+def sql_append_tsv_chunk(chunk):
+    # write the data to a sqlite table
+    chunk.to_sql('gnomad_17', conn, if_exists='append', index = True)
+
+def AF_extract(info_column):
+    # Replace this with your own function
+    annotations = info_column.split(';')
+
+    for annotation in annotations:
+        key_value_pair = annotation.split('=')
+        if key_value_pair[0] == 'AF':
+            af_value = key_value_pair[1]
+            break
+    return af_value
+
+def parse_row(line):
+    column_index = 7
+    # Process each row of the table
+    # Access the appropriate column using its index in the tuple
+    af_value = AF_extract(line[column_index])
+    # Update the appropriate value
+    line[column_index] = af_value
+    # Convert the row back to a tuple and return it
+    return(line)
+
+with open(gnomadfile,'r') as gnomread:
+    for line in gnomread:
+        line = gnomread.readline()
+        line = line.split('\t')
+        line = parse_row(line)
+        line = [line]
+        #print(line)
+        df = pd.DataFrame(line, columns=['CHROM', 'POS', 'ID','REF','ALT','QUAL', 'FILTER','AF'])
+        #print(df)
+        sql_append_tsv_chunk(df)
+
+c.close()
