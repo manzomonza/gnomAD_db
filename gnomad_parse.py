@@ -4,11 +4,16 @@ import sqlite3, csv
 from pathlib import Path
 import pandas as pd
 # create empty file
+'''
 Path('/home/ionadmin/ngs_variant_annotation/variantAnnotation/gnomad_17.sdb').touch()
-
-## SQL conn
+# SQL conn
 with sqlite3.connect('/home/ionadmin/ngs_variant_annotation/variantAnnotation/gnomad_17.sdb', timeout = 100) as conn:
     c = conn.cursor()
+'''
+Path('gnomad_17.sdb').touch()
+with sqlite3.connect('gnomad_17.sdb', timeout = 100) as conn:
+    c = conn.cursor()
+
 
 gnomadfile = 'nocomments.txt'
 
@@ -46,9 +51,10 @@ with open(gnomadfile,'r') as gnomread:
         if not line.strip().startswith("#"):
             line = gnomread.readline()
             line = line.split('\t')
-            line = parse_row(line)
-            line = [line]
-            df = pd.DataFrame(line, columns=['CHROM', 'POS', 'ID','REF','ALT','QUAL', 'FILTER','AF'])
-            sql_append_tsv_chunk(df)
+            if len(line) == 8:
+                line = parse_row(line)
+                line = [line]
+                df = pd.DataFrame(line, columns=['CHROM', 'POS', 'ID','REF','ALT','QUAL', 'FILTER','AF'])
+                sql_append_tsv_chunk(df)
 
 c.close()
