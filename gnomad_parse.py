@@ -4,7 +4,7 @@ import sqlite3, csv
 from pathlib import Path
 import pandas as pd
 # create empty file
-'''
+
 Path('/home/ionadmin/ngs_variant_annotation/variantAnnotation/gnomad_17.sdb').touch()
 # SQL conn
 with sqlite3.connect('/home/ionadmin/ngs_variant_annotation/variantAnnotation/gnomad_17.sdb', timeout = 100) as conn:
@@ -13,9 +13,9 @@ with sqlite3.connect('/home/ionadmin/ngs_variant_annotation/variantAnnotation/gn
 Path('gnomad_17.sdb').touch()
 with sqlite3.connect('gnomad_17.sdb', timeout = 100) as conn:
     c = conn.cursor()
+'''
 
-
-gnomadfile = 'nocomments.txt'
+gnomadfile = 'gnomad.exomes.r2.1.1.sites.17.vcf'
 
 ''' Specifying columns is not necessary for tables with column
 names
